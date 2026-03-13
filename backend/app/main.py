@@ -1,0 +1,32 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from app.config import settings
+from app.database import init_db
+from app.routes import user_route, board_route, column_route, card_route
+
+app = FastAPI(
+    title=settings.app_name,
+    debug=settings.debug,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = settings.cors_origins,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
+
+app.mount("/static", StaticFiles(directory=settings.static_dir), name="static")
+
+app.include_router(user_route.router)
+app.include_router(board_route.router)
+app.include_router(column_route.router)
+app.include_router(card_route.router)
+
+@app.on_event("startup")
+def startup_event():
+    init_db()

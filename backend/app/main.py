@@ -14,13 +14,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = settings.cors_origins,
+    allow_origins = settings.core_origins,
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers = ["*"],
 )
-
-app.mount("/static", StaticFiles(directory=settings.static_dir), name="static")
 
 app.include_router(user_route.router)
 app.include_router(board_route.router)

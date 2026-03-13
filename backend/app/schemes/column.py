@@ -1,5 +1,6 @@
 from pydantic import Field, BaseModel
-from app.schemas.card import CardResponse
+from app.schemes.card import CardResponse
+from typing import Optional
 
 class ColumnBase(BaseModel):
     title: str = Field(..., min_length=3, max_length = 15)

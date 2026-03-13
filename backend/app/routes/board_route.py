@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from database import get_db
+from app.database import get_db
 from app.services.board_service import BoardService
 from app.schemes.board import BoardCreate, BoardResponse, BoardListResponse, BoardUpdate
 

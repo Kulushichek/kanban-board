@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from database import get_db
+from app.database import get_db
 from app.services.card_service import CardService
 from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate
 

@@ -7,6 +7,9 @@ class ColumnBase(BaseModel):
 class ColumnCreate(ColumnBase):
     pass
 
+class ColumnUpdate(BaseModel):
+    title: Optional[str] = Field(None, min_length=3, max_length = 15)
+
 class ColumnResponse(ColumnBase):
     id: int = Field(..., description="Unique column ID")
     board_id: int = Field(..., description="Board ID")

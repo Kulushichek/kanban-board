@@ -8,10 +8,11 @@ class CardBase(BaseModel):
     description: Optional[str] = Field(None, min_length=3, max_length=200, description="Task description")
 
 class CardUpdate(BaseModel):
-    id: int = Field(..., description="Unique card ID")
     title: Optional[str] = Field(None, min_length=3, max_length=15)
     deadline: Optional[date] = Field(None, description="Task deadline")
     description: Optional[str] = Field(None, min_length=3, max_length=200, description="Task description")
+
+    column_id: Optional[int] = Field(None, description="Column ID")
 
 class CardCreate(CardBase):
     pass

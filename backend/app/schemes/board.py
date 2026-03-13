@@ -1,11 +1,16 @@
+from typing import Optional
 from pydantic import BaseModel, Field
-from app.schemas.column import ColumnResponse
+from app.schemes.column import ColumnResponse
 
 class BoardBase(BaseModel):
     title: str = Field(..., min_length=5, max_length=50, description="Board title")
 
 class BoardCreate(BoardBase):
     pass
+
+class BoardUpdate(BaseModel):
+    id: int = Field(..., description="Unique board ID")
+    title: Optional[str] = Field(None, min_length=5, max_length=50, description="Board title")
 
 class BoardResponse(BoardBase):
     id: int = Field(..., description="Unique board ID")

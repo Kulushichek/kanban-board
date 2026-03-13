@@ -9,4 +9,4 @@ class Board(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     user = relationship("User", back_populates="boards")
-    columns = relationship("Column", back_populates="board")
+    columns = relationship("Column", back_populates="board", cascade="all, delete-orphan")

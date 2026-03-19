@@ -17,6 +17,16 @@ class UserRepository:
         self.db.refresh(db_user) # Генерация sql запроса SELECT
         return db_user
 
+    def update_user_password(self, user_id: int, hashed_password: str) -> Optional[User]:
+        db_user = self.get_user_by_id(user_id)
+        if not db_user:
+            return None
+        
+        db_user.hashed_password = hashed_password
+        self.db.commit()
+        self.db.refresh(db_user)
+        return db_user
+
     def get_user_by_email(self, email:str) -> Optional[User]:
         return self.db.query(User).filter(User.email == email).first()
 

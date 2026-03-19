@@ -8,6 +8,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=72, description="User password")
 
+class UserPasswordUpdate(BaseModel):
+    old_password: str = Field(..., description="Текущий пароль")
+    new_password: str = Field(..., min_length=8, max_length=72, description="Новый пароль")
+
 # Схема для ответа (GET запрос или ответ после создания)
 class UserResponse(UserBase):
     id: int = Field(..., description="Unique user ID")

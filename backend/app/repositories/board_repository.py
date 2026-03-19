@@ -15,14 +15,14 @@ class BoardRepository:
         self.db.refresh(db_board)
         return db_board
 
-    def get_board_by_id(self, board_id: int) -> Optional[Board]:
-        return self.db.query(Board).filter(Board.id == board_id).first()
+    def get_board_by_id(self, board_id: int, user_id: int) -> Optional[Board]:
+        return self.db.query(Board).filter(Board.id == board_id, Board.user_id == user_id).first()
 
     def get_all_boards(self, user_id: int) -> List[Board]:
         return self.db.query(Board).filter(Board.user_id == user_id).all()
 
-    def update_board(self, board_id: int, board_data: BoardUpdate) -> Optional[Board]:
-        db_board = self.db.query(Board).filter(Board.id == board_id).first()
+    def update_board(self, board_id: int, user_id: int, board_data: BoardUpdate) -> Optional[Board]:
+        db_board = self.db.query(Board).filter(Board.id == board_id, Board.user_id == user_id).first()
         if not db_board:
             return None
         db_board.title = board_data.title
@@ -30,8 +30,8 @@ class BoardRepository:
         self.db.refresh(db_board)
         return db_board
 
-    def delete_board(self, board_id: int) -> Optional[Board]:
-        db_board = self.db.query(Board).filter(Board.id == board_id).first()
+    def delete_board(self, board_id: int, user_id: int) -> Optional[Board]:
+        db_board = self.db.query(Board).filter(Board.id == board_id, Board.user_id == user_id).first()
         if not db_board:
             return None
         self.db.delete(db_board)

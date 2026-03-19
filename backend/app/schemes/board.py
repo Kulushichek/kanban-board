@@ -9,7 +9,6 @@ class BoardCreate(BoardBase):
     pass
 
 class BoardUpdate(BaseModel):
-    id: int = Field(..., description="Unique board ID")
     title: Optional[str] = Field(None, min_length=5, max_length=50, description="Board title")
 
 class BoardResponse(BoardBase):

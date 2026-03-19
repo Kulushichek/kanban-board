@@ -9,27 +9,27 @@ router = APIRouter(
     tags=["Boards"]
 )
 
-@router.post("/create", response_model=BoardResponse, status_code=status.HTTP_201_CREATED)
-def create_board(board_data: BoardCreate, db: Session = Depends(get_db)):
+@router.post("/create/{user_id}", response_model=BoardResponse, status_code=status.HTTP_201_CREATED)
+def create_board(user_id: int, board_data: BoardCreate, db: Session = Depends(get_db)):
     board_service = BoardService(db)
-    return board_service.create_board(board_data)
+    return board_service.create_board(board_data, user_id)
 
-@router.get("/{board_id}", response_model=BoardResponse, status_code=status.HTTP_200_OK)
-def get_board_by_id(board_id: int, db: Session = Depends(get_db)):
+@router.get("/{user_id}/{board_id}", response_model=BoardResponse, status_code=status.HTTP_200_OK)
+def get_board_by_id(user_id: int, board_id: int, db: Session = Depends(get_db)):
     board_service = BoardService(db)
-    return board_service.get_board_by_id(board_id)
+    return board_service.get_board_by_id(board_id, user_id)
 
-@router.get("/all", response_model=BoardListResponse, status_code=status.HTTP_200_OK)
-def get_all_boards(db: Session = Depends(get_db)):
+@router.get("/all/{user_id}", response_model=BoardListResponse, status_code=status.HTTP_200_OK)
+def get_all_boards(user_id: int, db: Session = Depends(get_db)):
     board_service = BoardService(db)
-    return board_service.get_all_boards()
+    return board_service.get_all_boards(user_id)
 
-@router.put("/{board_id}", response_model=BoardResponse, status_code=status.HTTP_200_OK)
-def update_board(board_id: int, board_data: BoardUpdate, db: Session = Depends(get_db)):
+@router.put("/{user_id}/{board_id}", response_model=BoardResponse, status_code=status.HTTP_200_OK)
+def update_board(user_id: int, board_id: int, board_data: BoardUpdate, db: Session = Depends(get_db)):
     board_service = BoardService(db)
-    return board_service.update_board(board_id, board_data)
+    return board_service.update_board(board_id, user_id, board_data)
 
-@router.delete("/{board_id}", response_model=BoardResponse, status_code=status.HTTP_200_OK)
-def delete_board(board_id: int, db: Session = Depends(get_db)):
+@router.delete("/{user_id}/{board_id}", response_model=BoardResponse, status_code=status.HTTP_200_OK)
+def delete_board(user_id: int, board_id: int, db: Session = Depends(get_db)):
     board_service = BoardService(db)
-    return board_service.delete_board(board_id)
+    return board_service.delete_board(board_id, user_id)

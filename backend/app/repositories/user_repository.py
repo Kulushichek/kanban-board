@@ -7,10 +7,12 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, user_data: UserCreate) -> User:
-        db_user = User(**user_data.model_dump())
+    def create_user(self, user_data: UserCreate, hashed_password: str) -> User:
+        db_user = User(
+            email = user_data.email,
+            hashed_password = hashed_password
+        )
         self.db.add(db_user)
-
         self.db.commit() # Генерация sql запроса INSERT
         self.db.refresh(db_user) # Генерация sql запроса SELECT
         return db_user

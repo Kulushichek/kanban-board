@@ -6,7 +6,7 @@ class UserBase(BaseModel):
 
 # Схема для создания (POST запрос)
 class UserCreate(UserBase):
-    pass
+    password: str = Field(..., min_length=8, max_length=72, description="User password")
 
 # Схема для ответа (GET запрос или ответ после создания)
 class UserResponse(UserBase):

@@ -18,8 +18,11 @@ class ColumnRepository:
     def get_all_columns(self, board_id: int) -> List[Column]:
         return self.db.query(Column).filter(Column.board_id == board_id).all()
 
+    def get_column_by_id(self, column_id: int) -> Optional[Column]:
+        return self.db.query(Column).filter(Column.id == column_id).first()
+
     def update_column(self, column_id: int, column_data: ColumnUpdate) -> Optional[Column]:
-        db_column = self.db.query(Column).filter(Column.id == column_id).first()
+        db_column = self.get_column_by_id(column_id)
         if not db_column:
             return None
         update_data = column_data.model_dump(exclude_unset=True)
@@ -30,7 +33,7 @@ class ColumnRepository:
         return db_column
 
     def delete_column(self, column_id: int) -> Optional[Column]:
-        db_column = self.db.query(Column).filter(Column.id == column_id).first()
+        db_column = self.get_column_by_id(column_id)
         if not db_column:
             return None
         self.db.delete(db_column)

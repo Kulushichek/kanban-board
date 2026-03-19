@@ -9,22 +9,22 @@ router = APIRouter(
     tags=["Columns"]
 )
 
-@router.post("/create", response_model=ColumnResponse, status_code=status.HTTP_201_CREATED)
-def create_column(column_data: ColumnCreate, db: Session = Depends(get_db)):
+@router.post("/create/{user_id}/{board_id}", response_model=ColumnResponse, status_code=status.HTTP_201_CREATED)
+def create_column(user_id: int, board_id: int, column_data: ColumnCreate, db: Session = Depends(get_db)):
     column_service = ColumnService(db)
-    return column_service.create_column(column_data)
+    return column_service.create_column(column_data, board_id, user_id)
 
-@router.get("/all", response_model=ColumnListResponse, status_code=status.HTTP_200_OK)
-def get_all_columns(db: Session = Depends(get_db)):
+@router.get("/all/{user_id}/{board_id}", response_model=ColumnListResponse, status_code=status.HTTP_200_OK)
+def get_all_columns(user_id: int, board_id: int, db: Session = Depends(get_db)):
     column_service = ColumnService(db)
-    return column_service.get_all_columns()
+    return column_service.get_all_columns(board_id, user_id)
 
-@router.put("/{column_id}", response_model=ColumnResponse, status_code=status.HTTP_200_OK)
-def update_column(column_id: int, column_data: ColumnUpdate, db: Session = Depends(get_db)):
+@router.put("/{user_id}/{column_id}", response_model=ColumnResponse, status_code=status.HTTP_200_OK)
+def update_column(user_id: int, column_id: int, column_data: ColumnUpdate, db: Session = Depends(get_db)):
     column_service = ColumnService(db)
-    return column_service.update_column(column_id, column_data)
+    return column_service.update_column(column_id, column_data, user_id)
 
-@router.delete("/{column_id}", response_model=ColumnResponse, status_code=status.HTTP_200_OK)
-def delete_column(column_id: int, db: Session = Depends(get_db)):
+@router.delete("/{user_id}/{column_id}", response_model=ColumnResponse, status_code=status.HTTP_200_OK)
+def delete_column(user_id: int, column_id: int, db: Session = Depends(get_db)):
     column_service = ColumnService(db)
-    return column_service.delete_column(column_id)
+    return column_service.delete_column(column_id, user_id)

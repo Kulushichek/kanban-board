@@ -9,23 +9,23 @@ router = APIRouter(
     tags=["Cards"]
 )
 
-@router.post("/create/{column_id}", response_model=CardResponse, status_code=status.HTTP_201_CREATED)
-def create_card(card_data: CardCreate, column_id: int, db: Session = Depends(get_db)):
+@router.post("/create/{user_id}/{column_id}", response_model=CardResponse, status_code=status.HTTP_201_CREATED)
+def create_card(user_id: int, card_data: CardCreate, column_id: int, db: Session = Depends(get_db)):
     card_service = CardService(db)
-    return card_service.create_card(card_data, column_id)
+    return card_service.create_card(card_data, column_id, user_id)
 
-@router.get("/all/{column_id}", response_model=CardListResponse, status_code=status.HTTP_200_OK)
-def get_all_cards(column_id: int, db: Session = Depends(get_db)):
+@router.get("/all/{user_id}/{column_id}", response_model=CardListResponse, status_code=status.HTTP_200_OK)
+def get_all_cards(user_id: int, column_id: int, db: Session = Depends(get_db)):
     card_service = CardService(db)
-    return card_service.get_all_cards(column_id)
+    return card_service.get_all_cards(column_id, user_id)
 
-@router.put("/{card_id}", response_model=CardResponse, status_code=status.HTTP_200_OK)
-def update_card(card_id: int, card_data: CardUpdate, db: Session = Depends(get_db)):
+@router.put("/{user_id}/{card_id}", response_model=CardResponse, status_code=status.HTTP_200_OK)
+def update_card(user_id: int, card_id: int, card_data: CardUpdate, db: Session = Depends(get_db)):
     card_service = CardService(db)
-    return card_service.update_card(card_id, card_data)
+    return card_service.update_card(user_id, card_id, card_data)
 
-@router.delete("/{card_id}", response_model=CardResponse, status_code=status.HTTP_200_OK)
-def delete_card(card_id: int, db: Session = Depends(get_db)):
+@router.delete("/{user_id}/{card_id}", response_model=CardResponse, status_code=status.HTTP_200_OK)
+def delete_card(user_id: int, card_id: int, db: Session = Depends(get_db)):
     card_service = CardService(db)
-    return card_service.delete_card(card_id)
+    return card_service.delete_card(user_id, card_id)
 

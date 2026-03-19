@@ -14,6 +14,9 @@ class CardRepository:
         self.db.commit()
         self.db.refresh(db_card)
         return db_card
+
+    def get_card_by_id(self, card_id: int) -> Optional[Card]:
+        return self.db.query(Card).filter(Card.id == card_id).first()
     
     def get_all_cards(self, column_id: int) -> List[Card]:
         return self.db.query(Card).filter(Card.column_id == column_id).all()

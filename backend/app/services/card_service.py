@@ -8,6 +8,7 @@ from app.repositories.column_repository import ColumnRepository
 from app.schemes.card import CardImageResponse
 from uuid import uuid4
 import shutil
+from pathlib import Path
 import os
 
 
@@ -126,10 +127,11 @@ class CardService:
 
         file_extension = file.filename.split('.')[-1]
         unique_filename = f"{uuid4()}.{file_extension}"
-        file_path = os.path.join(self.upload_dir, unique_filename)
+        
+        upload_path = Path(self.upload_dir) / unique_filename
 
         try:
-            with open(file_path, "wb") as buffer:
+            with open(upload_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
         except Exception as e:
             raise HTTPException(
@@ -137,7 +139,8 @@ class CardService:
                 detail=f"Could not save file: {str(e)}"
             )
 
-        image = self.repository.add_image(card_id, file_path)
+        file_path_db = upload_path.as_posix()
+        image = self.repository.add_image(card_id, "/" + file_path_db)
         return CardImageResponse.model_validate(image)
 
     def delete_image(self, user_id: int, card_id: int, image_id: int) -> CardImageResponse:

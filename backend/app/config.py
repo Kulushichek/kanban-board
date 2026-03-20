@@ -1,10 +1,11 @@
 from pydantic_settings import BaseSettings
+from pydantic_settings import SettingsConfigDict
 
 
 class Settings(BaseSettings):
     app_name: str = "Kanban Project"
-    debug: bool = True
-    database_url: str = "sqlite:///./kanban.db"
+    debug: bool
+    database_url: str
     core_origins: list = [
         "http://localhost:5173",
         "http://localhost:3000",
@@ -12,7 +13,6 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
     ]
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()

@@ -83,3 +83,4 @@ celerybeat-schedule
 celerybeat-schedule-wal
 
 kanban.db
+static/

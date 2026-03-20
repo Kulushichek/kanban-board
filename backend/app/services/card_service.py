@@ -1,10 +1,15 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate
 from app.repositories.card_repository import CardRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.board_repository import BoardRepository
 from app.repositories.column_repository import ColumnRepository
+from app.schemes.card import CardImageResponse
+from uuid import uuid4
+import shutil
+import os
+
 
 class CardService:
     def __init__(self, db: Session):
@@ -12,6 +17,10 @@ class CardService:
         self.user_repository = UserRepository(db)
         self.board_repository = BoardRepository(db)
         self.column_repository = ColumnRepository(db)
+
+        self.upload_dir = "static/cards"
+        if not os.path.exists(self.upload_dir):
+            os.makedirs(self.upload_dir, exist_ok=True)
 
     def check_user_exists(self, user_id: int):
         user = self.user_repository.get_user_by_id(user_id)
@@ -111,3 +120,50 @@ class CardService:
         self.get_card_by_id(card_id, user_id)
         card = self.repository.delete_card(card_id)
         return CardResponse.model_validate(card)
+
+    def add_image(self, user_id: int, card_id: int, file: UploadFile) -> CardImageResponse:
+        self.get_card_by_id(card_id, user_id)
+
+        file_extension = file.filename.split('.')[-1]
+        unique_filename = f"{uuid4()}.{file_extension}"
+        file_path = os.path.join(self.upload_dir, unique_filename)
+
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Could not save file: {str(e)}"
+            )
+
+        image = self.repository.add_image(card_id, file_path)
+        return CardImageResponse.model_validate(image)
+
+    def delete_image(self, user_id: int, card_id: int, image_id: int) -> CardImageResponse:
+        self.get_card_by_id(card_id, user_id)
+        image = self.repository.get_image_by_id(image_id)
+
+        if not image or image.card_id != card_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Image with ID {image_id} not found. Cannot delete image."
+            )
+            
+        deleted_image = self.repository.delete_image(image_id)
+        if deleted_image and os.path.exists(deleted_image.file_path):
+            try:
+                os.remove(deleted_image.file_path)
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Could not delete file: {str(e)}"
+                )
+        return CardImageResponse.model_validate(deleted_image)
+
+    def get_all_images(self, user_id: int, card_id: int) -> list[CardImageResponse]:
+        card_data = self.get_card_by_id(card_id, user_id)
+        images = []
+        for image in card_data.images:
+            images.append(CardImageResponse.model_validate(image))
+        return images

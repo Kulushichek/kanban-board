@@ -17,9 +17,17 @@ class CardUpdate(BaseModel):
 class CardCreate(CardBase):
     pass
 
+class CardImageResponse(BaseModel):
+    id: int
+    file_path: str
+
+    class Config:
+        from_attributes = True
+
 class CardResponse(CardBase):
     id: int = Field(..., description="Unique card ID")
     column_id: int = Field(..., description="Column ID")
+    images: list[CardImageResponse] = []
 
     class Config:
         from_attributes = True

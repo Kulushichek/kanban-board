@@ -1,6 +1,19 @@
+import { useState } from 'react';
 import userIcon from '../assets/userIcon.png';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+    const navigate = useNavigate();
+
+    // Создаем две ячейки памяти (для почты и пароля)
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Запрещаем страничке перезагружаться
+        console.log('Твои данные:', { email, password });
+    };
+
     return (
         <div className="flex h-screen items-center justify-center bg-gray-50">
 
@@ -19,12 +32,14 @@ export default function Login() {
 
                 {/*Нижняя часть с формой*/}
                 <div className="p-6">
-                    <form className="flex flex-col gap-4">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
                         {/* Поле Email */}
                         <input
                             type="email"
                             placeholder="Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                         />
 
@@ -32,6 +47,8 @@ export default function Login() {
                         <input
                             type="password"
                             placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                         />
 
@@ -48,7 +65,11 @@ export default function Login() {
                     {/* Ссылка на регистрацию */}
                     <div className="mt-6 pt-4 border-t border-dashed border-gray-300 flex justify-between items-center text-sm">
                         <span className="text-gray-600">Don't have an account?</span>
-                        <button className="bg-pink-200 text-pink-800 px-3 py-1 rounded-md hover:bg-pink-300 transition-colors">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/register')}
+                            className="bg-pink-200 text-pink-800 px-3 py-1 rounded-md hover:bg-pink-300 transition-colors"
+                        >
                             Create account
                         </button>
                     </div>

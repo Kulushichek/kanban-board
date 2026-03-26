@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, EmailStr
 
 # Базовая схема
 class UserBase(BaseModel):
+    username: str = Field(..., min_length=3, max_length=20, description="User username")
     email: EmailStr = Field(..., description="User email")
 
 # Схема для создания (POST запрос)

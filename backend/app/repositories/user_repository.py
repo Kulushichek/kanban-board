@@ -9,6 +9,7 @@ class UserRepository:
 
     def create_user(self, user_data: UserCreate, hashed_password: str) -> User:
         db_user = User(
+            username = user_data.username,
             email = user_data.email,
             hashed_password = hashed_password
         )

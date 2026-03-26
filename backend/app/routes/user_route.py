@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.user_service import UserService
-from app.schemes.user import UserCreate, UserResponse, UserPasswordUpdate
+from app.schemes.user import UserCreate, UserResponse, UserPasswordUpdate, UserLogin
 
 router = APIRouter(
     prefix="/api/users",
     tags=["Users"]
 )
+
+@router.post("/login", response_model=UserResponse)
+def login_user(user_data: UserLogin, db: Session = Depends(get_db)):
+    user_service = UserService(db)
+    return user_service.login(user_data)
 
 @router.get('/{user_email}', response_model=UserResponse, status_code=status.HTTP_200_OK)
 def get_user_by_email(user_email: str, db: Session = Depends(get_db)):

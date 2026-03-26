@@ -1,17 +1,34 @@
 import { useState } from 'react';
 import userIcon from '../assets/userIcon.png';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 export default function Login() {
     const navigate = useNavigate();
 
-    // Создаем две ячейки памяти (для почты и пароля)
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault(); // Запрещаем страничке перезагружаться
-        console.log('Твои данные:', { email, password });
+        try {
+            const response = await api.post('/users/login', {
+                email: email,
+                password: password
+            });
+            const userData = response.data;
+            console.log('Успешный вход! Данные:', userData);
+
+            // Сохраняем идентификатор пользователя для дальнейшей работы
+            localStorage.setItem('userId', userData.id);
+
+            // Перекидываем на главную страницу
+            navigate('/');
+        }
+        catch (error) {
+            console.error('Ошибка входа:', error);
+            alert('Неверная почта или пароль!');
+        }
     };
 
     return (

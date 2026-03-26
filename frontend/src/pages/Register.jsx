@@ -1,6 +1,33 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import userRegIcon from '../assets/userRegisterIcon.png';
+import api from '../api/axios';
 
 export default function Register() {
+    const navigate = useNavigate();
+
+    // Три ячейки памяти
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await api.post('/users/create', {
+                email: email,
+                password: password,
+                username: username
+            });
+            navigate('/login');
+
+        } catch (error) {
+            console.error('Ошибка сервера:', error);
+            alert('Не удалось зарегистрироваться. Возможно, такой Email уже есть.');
+        }
+    };
+
     return (
         <div className="flex h-screen items-center justify-center bg-gray-50">
 
@@ -19,12 +46,23 @@ export default function Register() {
 
                 {/*Нижняя часть с формой*/}
                 <div className="p-6">
-                    <form className="flex flex-col gap-4">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+                        {/* Поле Username */}
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                        />
 
                         {/* Поле Email */}
                         <input
                             type="email"
                             placeholder="Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                         />
 
@@ -32,6 +70,8 @@ export default function Register() {
                         <input
                             type="password"
                             placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                         />
 
@@ -48,7 +88,10 @@ export default function Register() {
                     {/* Ссылка на регистрацию */}
                     <div className="mt-6 pt-4 border-t border-dashed border-gray-300 flex justify-between items-center text-sm">
                         <span className="text-gray-600">Already have an account?</span>
-                        <button className="bg-pink-200 text-pink-800 px-3 py-1 rounded-md hover:bg-pink-300 transition-colors">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/login')}
+                            className="bg-pink-200 text-pink-800 px-3 py-1 rounded-md hover:bg-pink-300 transition-colors">
                             Sign in
                         </button>
                     </div>

@@ -9,6 +9,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=72, description="User password")
 
+class UserLogin(BaseModel):
+    email: EmailStr = Field(..., description="User email")
+    password: str = Field(..., description="User password")
+
 class UserPasswordUpdate(BaseModel):
     old_password: str = Field(..., description="Текущий пароль")
     new_password: str = Field(..., min_length=8, max_length=72, description="Новый пароль")

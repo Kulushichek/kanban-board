@@ -5,10 +5,28 @@ from app.schemes.user import UserCreate, UserResponse
 from app.core.security import hash_password
 from app.schemes.user import UserPasswordUpdate
 from app.core.security import verify_password
+from app.schemes.user import UserLogin
 
 class UserService:
     def __init__(self, db: Session):
         self.repository = UserRepository(db)
+
+    def login(self, user_data: UserLogin) -> UserResponse:
+        user = self.repository.get_user_by_email(user_data.email)
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User with email not found"
+            )
+        
+        if not verify_password(user_data.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid password"
+            )
+        
+        return UserResponse.model_validate(user)
     
     def create_user(self, user_data: UserCreate) -> UserResponse:
         existing_user = self.repository.get_user_by_email(user_data.email)

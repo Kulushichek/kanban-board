@@ -17,10 +17,10 @@ export default function Login() {
                 password: password
             });
             const userData = response.data;
-            console.log('Успешный вход! Данные:', userData);
 
-            // Сохраняем идентификатор пользователя для дальнейшей работы
+            // Сохраняем идентификатор пользователя
             localStorage.setItem('userId', userData.id);
+            localStorage.setItem('username', userData.username);
 
             // Перекидываем на главную страницу
             navigate('/');

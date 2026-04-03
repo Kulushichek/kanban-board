@@ -1,18 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { useBoards } from '../hooks/useBoards';
+import Header from '../components/Header';
 
 export default function Boards() {
     const navigate = useNavigate();
 
     const {
-        username,
         boards,
         isModalOpen,
         setIsModalOpen,
         newBoardTitle,
         setNewBoardTitle,
         handleCreateBoard,
-        handleLogout,
         editingBoardId,
         editingTitle,
         setEditingTitle,
@@ -25,37 +24,7 @@ export default function Boards() {
     return (
         <div className="min-h-screen bg-board-gradient p-8 font-sans">
 
-            {/* Плавающая белая шапка (Header) */}
-            <header className="max-w-[1096px] mx-auto bg-white rounded-[20px] shadow-board px-6 py-3 flex justify-between items-center mb-12">
-
-                {/* Левая часть шапки */}
-                <div className="flex items-center gap-3">
-                    <div className="flex gap-1">
-                        <div className="w-3 h-5 bg-purple-400 rounded-sm"></div>
-                        <div className="w-3 h-5 bg-pink-200 rounded-sm"></div>
-                    </div>
-                    <span className="text-[#5B4A82] font-semibold text-lg">My boards</span>
-                </div>
-
-                {/* Правая часть шапки */}
-                <div className="flex items-center gap-4">
-                    {/* Иконка пользователя и имя */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">
-                            {username.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="text-gray-600 font-medium hidden sm:block">{username}</span>
-                    </div>
-
-                    {/* Кнопка Log out */}
-                    <button
-                        onClick={handleLogout}
-                        className="bg-[#F8E5F0] hover:bg-[#F0D4E4] text-[#8C528A] px-6 py-2 rounded-full font-medium transition-colors"
-                    >
-                        Log out
-                    </button>
-                </div>
-            </header>
+            <Header />
 
             {/* Контейнер для карточек досок */}
             <main className="max-w-[1096px] mx-auto flex flex-wrap gap-6">
@@ -122,7 +91,7 @@ export default function Boards() {
                     {/* Белая карточка модалки */}
                     <div className="bg-white rounded-[20px] p-8 w-full max-w-md shadow-2xl relative">
 
-                        {/* Кнопка закрытия (крестик) */}
+                        {/* Кнопка закрытия*/}
                         <button
                             onClick={() => setIsModalOpen(false)}
                             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"

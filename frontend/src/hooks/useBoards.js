@@ -37,12 +37,6 @@ export const useBoards = () => {
         }
     }, [navigate]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username');
-        navigate('/login');
-    };
-
     const handleCreateBoard = async (e) => {
         if (e) e.preventDefault();
 
@@ -117,7 +111,7 @@ export const useBoards = () => {
         }
     };
 
-    const handleKeyDown = (e, boardId) => {
+    const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.target.blur();
         } else if (e.key === 'Escape') {
@@ -133,7 +127,6 @@ export const useBoards = () => {
         newBoardTitle,
         setNewBoardTitle,
         handleCreateBoard,
-        handleLogout,
         editingBoardId,
         editingTitle,
         setEditingTitle,

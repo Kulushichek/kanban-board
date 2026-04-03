@@ -4,6 +4,23 @@
     background: linear-gradient(113.33deg, rgba(124, 36, 200, 0.75) 3.29%, rgba(185, 45, 120, 0.74448) 43.99%, rgba(217, 50, 78, 0.741574) 54.57%, rgba(227, 51, 66, 0.740713) 62.83%, rgba(233, 43, 77, 0.644869) 77.37%, rgba(232, 34, 96, 0.564583) 81.85%, rgba(231, 27, 111, 0.496711) 84.81%, rgba(230, 19, 131, 0.41) 89.89%);
 }
 
+.bg-workspace-gradient {
+    background: linear-gradient(0deg, rgba(236, 107, 121, 0.4), rgba(236, 107, 121, 0.4)), linear-gradient(125.88deg, #A65CCA 31.74%, #FC68C3 40.3%, #FFFFFF 87.31%);
+}
+
 .shadow-board {
     box-shadow: 0 2px 10px 0 #ffffff;
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+    height: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+    background: rgba(140, 82, 138, 0.6);
+    border-radius: 5px;
 }

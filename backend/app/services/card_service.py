@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, UploadFile
-from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate
+from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate, CardMove
 from app.repositories.card_repository import CardRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.board_repository import BoardRepository
@@ -116,6 +116,24 @@ class CardService:
                 )
         card = self.repository.update_card(card_id, card_data)
         return CardResponse.model_validate(card)
+    
+    def move_card(self, user_id: int, card_id: int, move_data: CardMove) -> CardResponse:
+        self.get_card_by_id(card_id, user_id)
+        
+        target_column = self.column_repository.get_column_by_id(move_data.column_id)
+        if not target_column:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Target column with ID {move_data.column_id} not found."
+            )
+            
+        moved_card = self.repository.move_card(
+            card_id=card_id, 
+            column_id=move_data.column_id, 
+            position=move_data.position
+        )
+        
+        return CardResponse.model_validate(moved_card)
     
     def delete_card(self, user_id: int, card_id: int) -> CardResponse:
         self.get_card_by_id(card_id, user_id)

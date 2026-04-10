@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.card_service import CardService
-from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate, CardImageResponse
+from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate, CardImageResponse, CardMove
 
 router = APIRouter(
     prefix="/api/cards",
@@ -23,6 +23,11 @@ def get_all_cards(user_id: int, column_id: int, db: Session = Depends(get_db)):
 def update_card(user_id: int, card_id: int, card_data: CardUpdate, db: Session = Depends(get_db)):
     card_service = CardService(db)
     return card_service.update_card(user_id, card_id, card_data)
+
+@router.put("/{user_id}/{card_id}/move", response_model=CardResponse, status_code=status.HTTP_200_OK)
+def move_card(user_id: int, card_id: int, move_data: CardMove, db: Session = Depends(get_db)):
+    card_service = CardService(db)
+    return card_service.move_card(user_id, card_id, move_data)
 
 @router.delete("/{user_id}/{card_id}", response_model=CardResponse, status_code=status.HTTP_200_OK)
 def delete_card(user_id: int, card_id: int, db: Session = Depends(get_db)):

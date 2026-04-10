@@ -14,6 +14,10 @@ class CardUpdate(BaseModel):
 
     column_id: Optional[int] = Field(None, description="Column ID")
 
+class CardMove(BaseModel):
+    column_id: int = Field(..., description="New Column ID")
+    position: int = Field(..., description="New card position")
+
 class CardCreate(CardBase):
     pass
 
@@ -27,6 +31,7 @@ class CardImageResponse(BaseModel):
 class CardResponse(CardBase):
     id: int = Field(..., description="Unique card ID")
     column_id: int = Field(..., description="Column ID")
+    position: int = Field(0, description="Position of the card in the column")
     images: list[CardImageResponse] = []
 
     class Config:

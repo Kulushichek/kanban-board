@@ -35,6 +35,18 @@ class CardRepository:
         self.db.commit()
         self.db.refresh(db_card)
         return db_card
+
+    def move_card(self, card_id: int, column_id: int, position: int) -> Optional[Card]:
+        db_card = self.get_card_by_id(card_id)
+        if not db_card:
+            return None
+        
+        db_card.column_id = column_id
+        db_card.position = position
+        
+        self.db.commit()
+        self.db.refresh(db_card)
+        return db_card
     
     def delete_card(self, card_id: int) -> Optional[Card]:
         db_card = self.db.query(Card).filter(Card.id == card_id).first()

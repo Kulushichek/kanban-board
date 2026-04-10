@@ -163,6 +163,29 @@ export const useColumns = (boardId) => {
         }
     };
 
+    const handleDragCard = async (source, destination) => {
+        const newColumns = [...columns];
+        const sourceColIndex = newColumns.findIndex(c => String(c.id) === source.droppableId);
+        const destColIndex = newColumns.findIndex(c => String(c.id) === destination.droppableId);
+        const sourceCol = newColumns[sourceColIndex];
+        const destCol = newColumns[destColIndex];
+        const [movedCard] = sourceCol.cards.splice(source.index, 1);
+
+        destCol.cards.splice(destination.index, 0, movedCard);
+
+        setColumns(newColumns);
+
+        try {
+            await api.put(`/cards/${userId}/${movedCard.id}/move`, {
+                column_id: destCol.id,
+                position: destination.index
+            });
+        } catch (error) {
+            console.error("Ошибка при сохранении позиции", error);
+        }
+    };
+
+
     const handleDeleteCard = async (columnId, cardId) => {
         const isConfirmed = window.confirm("Точно удалить эту карточку?");
         if (!isConfirmed) return false;
@@ -239,6 +262,7 @@ export const useColumns = (boardId) => {
         handleColumnKeyDown,
         handleCreateCard,
         handleUpdateCard,
+        handleDragCard,
         handleDeleteCard,
         handleAddImage,
         handleGetImages,

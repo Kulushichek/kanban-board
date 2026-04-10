@@ -3,6 +3,8 @@ import { useColumns } from '../hooks/useColumns';
 import { useState } from 'react';
 import Header from '../components/Header';
 
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+
 export default function BoardPage() {
     const { id: boardId } = useParams();
     const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function BoardPage() {
         handleColumnKeyDown,
         handleCreateCard,
         handleUpdateCard,
+        handleDragCard,
         handleDeleteCard,
         handleAddImage,
         handleGetImages,
@@ -95,6 +98,21 @@ export default function BoardPage() {
         }
     };
 
+    const onDragEnd = (result) => {
+        console.log("Результат перетаскивания:", result);
+
+        const { destination, source } = result;
+
+        if (!destination) return;
+
+        // Если бросили в то же самое место — ничего не делаем
+        if (destination.droppableId === source.droppableId && destination.index === source.index) {
+            return;
+        }
+
+        handleDragCard(source, destination);
+    };
+
     return (
         <div className="min-h-screen bg-workspace-gradient pt-8 pb-6 font-sans flex flex-col">
 
@@ -105,128 +123,144 @@ export default function BoardPage() {
             </div>
 
             <main className="flex-1 overflow-x-auto pb-6 max-w-[95%] w-full mx-auto px-4 lg:px-0 scrollbar-custom">
-                <div className="flex gap-6 items-start h-full">
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <div className="flex gap-6 items-start h-full">
+                        {columns.map(column => (
+                            <div key={column.id} className="bg-[#A3A7F9] rounded-xl w-72 flex-shrink-0 p-4 shadow-sm flex flex-col max-h-full border-2 border-white group">
+                                <div className="flex justify-between items-center mb-4 px-1 group">
+                                    {editingColumnId === column.id ? (
+                                        <input
+                                            type="text"
+                                            value={editingColumnTitle}
+                                            onChange={(e) => setEditingColumnTitle(e.target.value)}
+                                            onBlur={() => saveColumnTitle(column.id)}
+                                            onKeyDown={handleColumnKeyDown}
+                                            autoFocus
+                                            className="w-full bg-white/30 text-white placeholder-white/70 font-medium rounded px-2 py-1 outline-none focus:ring-2 focus:ring-white/50"
+                                        />
+                                    ) : (
+                                        <h3
+                                            onClick={(e) => startEditingColumn(e, column)}
+                                            className="text-white text-[18px] font-medium cursor-pointer hover:opacity-80 transition-opacity truncate flex-1"
+                                            title="Нажмите, чтобы изменить"
+                                        >
+                                            {column.title}
+                                        </h3>
+                                    )}
 
-                    {columns.map(column => (
-                        <div key={column.id} className="bg-[#A3A7F9] rounded-xl w-72 flex-shrink-0 p-4 shadow-sm flex flex-col max-h-full border-2 border-white group">
-
-                            <div className="flex justify-between items-center mb-4 px-1 group">
-                                {editingColumnId === column.id ? (
-                                    <input
-                                        type="text"
-                                        value={editingColumnTitle}
-                                        onChange={(e) => setEditingColumnTitle(e.target.value)}
-                                        onBlur={() => saveColumnTitle(column.id)}
-                                        onKeyDown={handleColumnKeyDown}
-                                        autoFocus
-                                        className="w-full bg-white/30 text-white placeholder-white/70 font-medium rounded px-2 py-1 outline-none focus:ring-2 focus:ring-white/50"
-                                    />
-                                ) : (
-                                    <h3
-                                        onClick={(e) => startEditingColumn(e, column)}
-                                        className="text-white text-[18px] font-medium cursor-pointer hover:opacity-80 transition-opacity truncate flex-1"
-                                        title="Нажмите, чтобы изменить"
+                                    {/* Иконка корзины */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteColumn(column.id);
+                                        }}
+                                        className="text-white/40 hover:text-[#E61383] transition-colors ml-2 opacity-0 group-hover:opacity-100"
+                                        title="Удалить колонку"
                                     >
-                                        {column.title}
-                                    </h3>
-                                )}
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
 
-                                {/* Иконка корзины */}
+                                <Droppable droppableId={String(column.id)}>
+                                    {(provided) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}
+                                            className="flex-1 overflow-y-auto mb-4 space-y-3 pr-1"
+                                        >
+                                            {column.cards && column.cards.map((card, index) => (
+                                                <Draggable key={card.id} draggableId={String(card.id)} index={index}>
+                                                    {(provided) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            key={card.id}
+                                                            onClick={() => openCardModal(column.id, card)}
+                                                            className="bg-white rounded-[15px] p-3 shadow-sm border border-white/50 cursor-pointer hover:shadow-md transition-shadow"
+                                                        >
+                                                            {/* Название */}
+                                                            <div className="bg-[#9DB2F5] rounded-[8px] px-3 py-1.5 mb-2">
+                                                                <p className="text-white text-[14px] font-bold truncate">{card.title}</p>
+                                                            </div>
+                                                            {/* Описание */}
+                                                            <div className="bg-[#9DB2F5]/40 rounded-[8px] px-3 py-4 mb-2">
+                                                                <p className="text-[#632289] text-[12px] leading-tight">
+                                                                    {card.description
+                                                                        ? (card.description.length > 20 ? card.description.substring(0, 20) + '...' : card.description)
+                                                                        : "No description..."
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                            {/* Дата */}
+                                                            <div className="flex items-center gap-1.5 ml-1">
+                                                                <div className="w-4 h-4 text-[#9DB2F5]">
+                                                                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" /></svg>
+                                                                </div>
+                                                                <span className="text-[#9DB2F5] text-[10px] font-bold">
+                                                                    {card.deadline ? new Date(card.deadline).toLocaleDateString() : 'date'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+
+                                            {provided.placeholder} {/* Бронируем место для перетаскивания */}
+                                            {/* Поле ввода при создании */}
+                                            {addingCardToColumn === column.id && (
+                                                <div className="bg-white rounded-[15px] p-2 shadow-inner border-2 border-[#9DB2F5]">
+                                                    <input
+                                                        autoFocus
+                                                        className="w-full bg-transparent outline-none text-[#632289] text-sm p-1"
+                                                        placeholder="Card name..."
+                                                        value={newCardTitle}
+                                                        onChange={(e) => setNewCardTitle(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') submitNewCard(column.id);
+                                                            if (e.key === 'Escape') {
+                                                                setAddingCardToColumn(null);
+                                                                setNewCardTitle("");
+                                                            }
+                                                        }}
+
+                                                        onBlur={() => {
+                                                            if (!newCardTitle.trim()) {
+                                                                setAddingCardToColumn(null);
+                                                                setNewCardTitle("");
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </Droppable>
+
                                 <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteColumn(column.id);
-                                    }}
-                                    className="text-white/40 hover:text-[#E61383] transition-colors ml-2 opacity-0 group-hover:opacity-100"
-                                    title="Удалить колонку"
+                                    onClick={() => setAddingCardToColumn(column.id)}
+                                    className="bg-[#CDBBFF] hover:bg-[#B296FF] text-white w-full py-2 rounded-lg flex items-center justify-center gap-1 font-bold transition-colors shadow-sm text-sm"
                                 >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
+                                    + create card
                                 </button>
                             </div>
+                        ))}
 
-                            <div className="flex-1 overflow-y-auto mb-4 space-y-3 pr-1">
-                                {column.cards && column.cards.map(card => (
-                                    <div
-                                        key={card.id}
-                                        onClick={() => openCardModal(column.id, card)}
-                                        className="bg-white rounded-[15px] p-3 shadow-sm border border-white/50 cursor-pointer hover:shadow-md transition-shadow">
-                                        {/* Название */}
-                                        <div className="bg-[#9DB2F5] rounded-[8px] px-3 py-1.5 mb-2">
-                                            <p className="text-white text-[14px] font-bold truncate">{card.title}</p>
-                                        </div>
-                                        {/* Описание */}
-                                        <div className="bg-[#9DB2F5]/40 rounded-[8px] px-3 py-4 mb-2">
-                                            <p className="text-[#632289] text-[12px] leading-tight">
-                                                {card.description
-                                                    ? (card.description.length > 20 ? card.description.substring(0, 20) + '...' : card.description)
-                                                    : "No description..."
-                                                }
-                                            </p>
-                                        </div>
-                                        {/* Дата */}
-                                        <div className="flex items-center gap-1.5 ml-1">
-                                            <div className="w-4 h-4 text-[#9DB2F5]">
-                                                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" /></svg>
-                                            </div>
-                                            <span className="text-[#9DB2F5] text-[10px] font-bold">
-                                                {card.deadline ? new Date(card.deadline).toLocaleDateString() : 'date'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {/* Поле ввода при создании */}
-                                {addingCardToColumn === column.id && (
-                                    <div className="bg-white rounded-[15px] p-2 shadow-inner border-2 border-[#9DB2F5]">
-                                        <input
-                                            autoFocus
-                                            className="w-full bg-transparent outline-none text-[#632289] text-sm p-1"
-                                            placeholder="Card name..."
-                                            value={newCardTitle}
-                                            onChange={(e) => setNewCardTitle(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') submitNewCard(column.id);
-                                                if (e.key === 'Escape') {
-                                                    setAddingCardToColumn(null);
-                                                    setNewCardTitle("");
-                                                }
-                                            }}
-
-                                            onBlur={() => {
-                                                if (!newCardTitle.trim()) {
-                                                    setAddingCardToColumn(null);
-                                                    setNewCardTitle("");
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            <button
-                                onClick={() => setAddingCardToColumn(column.id)}
-                                className="bg-[#CDBBFF] hover:bg-[#B296FF] text-white w-full py-2 rounded-lg flex items-center justify-center gap-1 font-bold transition-colors shadow-sm text-sm"
-                            >
-                                + create card
-                            </button>
+                        <div className="bg-[#CDBBFF]/80 hover:bg-[#B296FF] transition-colors rounded-xl w-72 flex-shrink-0 p-2 border-dashed border-2 border-white">
+                            <form onSubmit={handleCreateColumn}>
+                                <input
+                                    type="text"
+                                    value={newColumnTitle}
+                                    onChange={(e) => setNewColumnTitle(e.target.value)}
+                                    placeholder="+ create column"
+                                    className="w-full px-4 py-2 bg-transparent border-none outline-none text-white placeholder-white/80 font-medium text-center"
+                                />
+                            </form>
                         </div>
-                    ))}
-
-                    <div className="bg-[#CDBBFF]/80 hover:bg-[#B296FF] transition-colors rounded-xl w-72 flex-shrink-0 p-2 border-dashed border-2 border-white">
-                        <form onSubmit={handleCreateColumn}>
-                            <input
-                                type="text"
-                                value={newColumnTitle}
-                                onChange={(e) => setNewColumnTitle(e.target.value)}
-                                placeholder="+ create column"
-                                className="w-full px-4 py-2 bg-transparent border-none outline-none text-white placeholder-white/80 font-medium text-center"
-                            />
-                        </form>
                     </div>
-
-                </div>
+                </DragDropContext>
             </main>
 
             <footer className="max-w-[95%] w-full mx-auto mt-auto pt-2 px-4 lg:px-0 flex flex-col items-center">

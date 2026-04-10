@@ -184,6 +184,45 @@ export const useColumns = (boardId) => {
         }
     };
 
+    const handleAddImage = async (cardId, file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await api.post(`/cards/${userId}/${cardId}/images`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Ошибка при загрузке картинки:', error);
+            alert('Не удалось загрузить картинку');
+            return null;
+        }
+    };
+
+    const handleGetImages = async (cardId) => {
+        try {
+            const response = await api.get(`/cards/${userId}/${cardId}/images`);
+            return response.data;
+        } catch (error) {
+            console.error('Ошибка при загрузке списка картинок:', error);
+            return [];
+        }
+    };
+
+    const handleDeleteImage = async (cardId, imageId) => {
+        try {
+            await api.delete(`/cards/${userId}/${cardId}/images/${imageId}`);
+            return true;
+        } catch (error) {
+            console.error('Ошибка при удалении картинки:', error);
+            alert('Не удалось удалить картинку');
+            return false;
+        }
+    };
+
     return {
         columns,
         boardTitle,
@@ -200,6 +239,9 @@ export const useColumns = (boardId) => {
         handleColumnKeyDown,
         handleCreateCard,
         handleUpdateCard,
-        handleDeleteCard
+        handleDeleteCard,
+        handleAddImage,
+        handleGetImages,
+        handleDeleteImage
     };
 };

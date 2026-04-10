@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
+import ProfileModal from './ProfileModal';
+import { useState } from 'react';
 
 export default function Header() {
     const navigate = useNavigate();
-
     const username = localStorage.getItem('username') || 'User';
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem('userId');
@@ -23,7 +25,11 @@ export default function Header() {
 
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">
+                    <div
+                        onClick={() => setIsProfileModalOpen(true)}
+                        className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 cursor-pointer hover:bg-blue-200 transition-colors shadow-sm"
+                        title="Profile settings"
+                    >
                         {username.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-gray-600 font-medium hidden sm:block">{username}</span>
@@ -35,6 +41,10 @@ export default function Header() {
                 >Log out
                 </button>
             </div>
+            <ProfileModal
+                isOpen={isProfileModalOpen}
+                onClose={() => setIsProfileModalOpen(false)}
+            />
         </header>
     )
 }

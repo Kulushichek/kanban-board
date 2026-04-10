@@ -22,22 +22,35 @@ export default function BoardPage() {
         handleColumnKeyDown,
         handleCreateCard,
         handleUpdateCard,
-        handleDeleteCard
+        handleDeleteCard,
+        handleAddImage,
+        handleGetImages,
+        handleDeleteImage
     } = useColumns(boardId);
 
     const [addingCardToColumn, setAddingCardToColumn] = useState(null);
     const [newCardTitle, setNewCardTitle] = useState("");
 
+    const [cardImages, setCardImages] = useState([]);
+
     const [activeCard, setActiveCard] = useState(null); // Хранит { columnId, card } открытой карточки
     const [editCardData, setEditCardData] = useState({ title: '', description: '', deadline: '' });
 
-    const openCardModal = (columnId, card) => {
+    const openCardModal = async (columnId, card) => {
         setActiveCard({ columnId, cardId: card.id });
         setEditCardData({
             title: card.title || '',
             description: card.description || '',
             deadline: card.deadline ? card.deadline.split('T')[0] : ''
         });
+
+        const images = await handleGetImages(card.id);
+        setCardImages(images);
+    };
+
+    const closeCardModal = () => {
+        setActiveCard(null);
+        setCardImages([]);
     };
 
     const saveCardModal = async () => {
@@ -50,7 +63,28 @@ export default function BoardPage() {
             deadline: editCardData.deadline === "" ? null : editCardData.deadline
         };
         const success = await handleUpdateCard(activeCard.columnId, activeCard.cardId, dataToSend);
-        if (success) setActiveCard(null);
+
+        if (success) closeCardModal();
+    };
+
+    const onImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const newImage = await handleAddImage(activeCard.cardId, file);
+        if (newImage) {
+            setCardImages(prev => [...prev, newImage]);
+        }
+    };
+
+    const onRemoveImage = async (imageId) => {
+        const isConfirmed = window.confirm("Точно удалить эту картинку?");
+        if (!isConfirmed) return;
+
+        const success = await handleDeleteImage(activeCard.cardId, imageId);
+        if (success) {
+            setCardImages(prev => prev.filter(img => img.id !== imageId));
+        }
     };
 
     const submitNewCard = async (columnId) => {
@@ -219,7 +253,7 @@ export default function BoardPage() {
                             <button
                                 onClick={async () => {
                                     const success = await handleDeleteCard(activeCard.columnId, activeCard.cardId);
-                                    if (success) setActiveCard(null);
+                                    if (success) closeCardModal();
                                 }}
                                 className="text-gray-400 hover:text-[#E61383] transition-colors p-2"
                                 title="Удалить карточку"
@@ -250,10 +284,46 @@ export default function BoardPage() {
                             />
                         </div>
 
-                        {/* Кнопки внизу */}
+                        <div className="flex flex-col gap-2 mt-2">
+                            <div className="flex justify-between items-center px-1">
+                                <label className="text-sm font-bold text-[#9DB2F5]">Attachments</label>
+
+                                <label className="cursor-pointer bg-[#9DB2F5]/20 hover:bg-[#9DB2F5]/40 text-[#632289] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                                    + Add Image
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={onImageUpload}
+                                    />
+                                </label>
+                            </div>
+                            {cardImages.length > 0 && (
+                                <div className="grid grid-cols-3 gap-3 bg-[#9DB2F5]/5 rounded-[12px] p-3 border border-[#9DB2F5]/20 max-h-[250px] overflow-y-auto scrollbar-custom pr-1">
+                                    {cardImages.map(img => (
+                                        <div key={img.id} className="relative group rounded-lg overflow-hidden border border-[#9DB2F5]/30 aspect-video bg-gray-100">
+
+                                            <img
+                                                src={`http://localhost:8000${img.file_path}`}
+                                                alt="attachment"
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <button
+                                                onClick={() => onRemoveImage(img.id)}
+                                                className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-600"
+                                                title="Удалить картинку"
+                                            >
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="flex justify-end gap-3 mt-4">
                             <button
-                                onClick={() => setActiveCard(null)}
+                                onClick={closeCardModal}
                                 className="px-5 py-2 rounded-full font-medium text-gray-500 hover:bg-gray-100 transition-colors"
                             >
                                 Cancel

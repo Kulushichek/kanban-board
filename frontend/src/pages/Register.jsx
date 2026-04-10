@@ -16,12 +16,14 @@ export default function Register() {
         e.preventDefault();
 
         try {
-            await api.post('/users/create', {
+            const response = await api.post('/users/create', {
                 email: email,
                 password: password,
                 username: username
             });
-            navigate('/login');
+            localStorage.setItem('userId', response.data.id);
+            localStorage.setItem('username', username);
+            navigate('/');
 
         } catch (error) {
             console.error('Ошибка сервера:', error);

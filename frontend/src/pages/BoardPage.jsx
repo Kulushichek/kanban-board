@@ -127,7 +127,7 @@ export default function BoardPage() {
                     <div className="flex gap-6 items-start h-full">
                         {columns.map(column => (
                             <div key={column.id} className="bg-[#A3A7F9] rounded-xl w-72 flex-shrink-0 p-4 shadow-sm flex flex-col max-h-full border-2 border-white group">
-                                <div className="flex justify-between items-center mb-4 px-1 group">
+                                <div className="flex justify-between items-start mb-4 px-1 group">
                                     {editingColumnId === column.id ? (
                                         <input
                                             type="text"
@@ -141,7 +141,7 @@ export default function BoardPage() {
                                     ) : (
                                         <h3
                                             onClick={(e) => startEditingColumn(e, column)}
-                                            className="text-white text-[18px] font-medium cursor-pointer hover:opacity-80 transition-opacity truncate flex-1"
+                                            className="max-w-[180px] w-full text-white text-[18px] font-medium cursor-pointer hover:opacity-80 transition-opacity flex-1 break-words"
                                             title="Нажмите, чтобы изменить"
                                         >
                                             {column.title}
@@ -154,11 +154,33 @@ export default function BoardPage() {
                                             e.stopPropagation();
                                             handleDeleteColumn(column.id);
                                         }}
-                                        className="text-white/40 hover:text-[#E61383] transition-colors ml-2 opacity-0 group-hover:opacity-100"
+                                        className="text-white/40 hover:text-[#E61383] transition-colors ml-2 mt-1 opacity-0 group-hover:opacity-100"
                                         title="Удалить колонку"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                            <title>Trash</title>
+                                            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                                <g id="Trash">
+                                                    <rect id="Rectangle" fillRule="nonzero" x="0" y="0" width="24" height="24">
+
+                                                    </rect>
+                                                    <path d="M6,6 L6.96683,19.5356 C6.98552,19.7973 7.20324,20 7.46556,20 L16.5344,20 C16.7968,20 17.0145,19.7973 17.0332,19.5356 L18,6" id="Path" stroke="#d9356fff" strokeWidth="2" strokeLinecap="round">
+
+                                                    </path>
+                                                    <line x1="4" y1="6" x2="20" y2="6" id="Path" stroke="#d9356fff" strokeWidth="2" strokeLinecap="round">
+
+                                                    </line>
+                                                    <line x1="10" y1="10" x2="10" y2="16" id="Path" stroke="#d9356fff" strokeWidth="2" strokeLinecap="round">
+
+                                                    </line>
+                                                    <line x1="14" y1="10" x2="14" y2="16" id="Path" stroke="#d9356fff" strokeWidth="2" strokeLinecap="round">
+
+                                                    </line>
+                                                    <path d="M15,6 C15,4.34315 13.6569,3 12,3 C10.3431,3 9,4.34315 9,6" id="Path" stroke="#d9356fff" strokeWidth="2" strokeLinecap="round">
+
+                                                    </path>
+                                                </g>
+                                            </g>
                                         </svg>
                                     </button>
                                 </div>

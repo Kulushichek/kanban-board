@@ -3,13 +3,13 @@ from app.schemes.card_schema import CardResponse
 from typing import Optional
 
 class ColumnBase(BaseModel):
-    title: str = Field(..., min_length=3, max_length = 15)
+    title: str = Field(..., min_length=3, max_length = 30)
 
 class ColumnCreate(ColumnBase):
     pass
 
 class ColumnUpdate(BaseModel):
-    title: Optional[str] = Field(None, min_length=3, max_length = 15)
+    title: Optional[str] = Field(None, min_length=3, max_length = 30)
 
 class ColumnResponse(ColumnBase):
     id: int = Field(..., description="Unique column ID")

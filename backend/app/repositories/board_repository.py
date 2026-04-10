@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.board import Board
-from app.schemes.board import BoardCreate
-from app.schemes.board import BoardUpdate
+from app.schemes.board_schema import BoardCreate, BoardUpdate
 
 class BoardRepository:
     def __init__(self, db: Session):

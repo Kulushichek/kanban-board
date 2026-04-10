@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from app.schemes.column import ColumnResponse
+from app.schemes.column_schema import ColumnResponse
 
 class BoardBase(BaseModel):
     title: str = Field(..., min_length=5, max_length=50, description="Board title")

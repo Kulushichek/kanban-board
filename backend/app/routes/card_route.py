@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.card_service import CardService
-from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate, CardImageResponse, CardMove
+from app.schemes.card_schema import CardCreate, CardResponse, CardListResponse, CardUpdate, CardImageResponse, CardMove
 
 router = APIRouter(
     prefix="/api/cards",

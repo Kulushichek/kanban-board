@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, UploadFile
-from app.schemes.card import CardCreate, CardResponse, CardListResponse, CardUpdate, CardMove
+from app.schemes.card_schema import CardCreate, CardResponse, CardListResponse, CardUpdate, CardMove
 from app.repositories.card_repository import CardRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.board_repository import BoardRepository
 from app.repositories.column_repository import ColumnRepository
-from app.schemes.card import CardImageResponse
+from app.schemes.card_schema import CardImageResponse
 from uuid import uuid4
 import shutil
 from pathlib import Path

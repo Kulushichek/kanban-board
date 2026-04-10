@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.column_service import ColumnService
-from app.schemes.column import ColumnCreate, ColumnResponse, ColumnListResponse, ColumnUpdate
+from app.schemes.column_schema import ColumnCreate, ColumnResponse, ColumnListResponse, ColumnUpdate
 
 router = APIRouter(
     prefix="/api/columns",

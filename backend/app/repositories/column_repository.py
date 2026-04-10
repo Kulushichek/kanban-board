@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.column import Column
-from app.schemes.column import ColumnCreate
-from app.schemes.column import ColumnUpdate
+from app.schemes.column_schema import ColumnCreate, ColumnUpdate
 
 class ColumnRepository:
     def __init__(self, db: Session):

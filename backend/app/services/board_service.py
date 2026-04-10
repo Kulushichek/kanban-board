@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.schemes.board import BoardCreate, BoardResponse, BoardListResponse, BoardUpdate
+from app.schemes.board_schema import BoardCreate, BoardResponse, BoardListResponse, BoardUpdate
 from app.repositories.board_repository import BoardRepository
 from app.repositories.user_repository import UserRepository
 

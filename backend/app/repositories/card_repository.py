@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.card import Card
-from app.schemes.card import CardCreate
-from app.schemes.card import CardUpdate
+from app.schemes.card_schema import CardCreate
+from app.schemes.card_schema import CardUpdate
 from app.models.card_image import CardImage
 
 class CardRepository:
@@ -20,7 +20,7 @@ class CardRepository:
         return self.db.query(Card).filter(Card.id == card_id).first()
     
     def get_all_cards(self, column_id: int) -> List[Card]:
-        return self.db.query(Card).filter(Card.column_id == column_id).all()
+        return self.db.query(Card).filter(Card.column_id == column_id).order_by(Card.position).all()
     
     def update_card(self, card_id: int, card_data: CardUpdate) -> Optional[Card]:
         db_card = self.db.query(Card).filter(Card.id == card_id).first()

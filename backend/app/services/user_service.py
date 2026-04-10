@@ -1,11 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.repositories.user_repository import UserRepository
-from app.schemes.user import UserCreate, UserResponse
+from app.schemes.user_schema import UserCreate, UserResponse, UserPasswordUpdate, UserLogin
 from app.core.security import hash_password
-from app.schemes.user import UserPasswordUpdate
 from app.core.security import verify_password
-from app.schemes.user import UserLogin
 
 class UserService:
     def __init__(self, db: Session):

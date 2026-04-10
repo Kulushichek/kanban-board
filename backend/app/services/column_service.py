@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.schemes.column import ColumnCreate, ColumnResponse, ColumnListResponse, ColumnUpdate
+from app.schemes.column_schema import ColumnCreate, ColumnResponse, ColumnListResponse, ColumnUpdate
 from app.repositories.column_repository import ColumnRepository
 from app.repositories.board_repository import BoardRepository
 from app.repositories.user_repository import UserRepository

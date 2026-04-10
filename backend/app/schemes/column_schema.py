@@ -1,5 +1,5 @@
 from pydantic import Field, BaseModel
-from app.schemes.card import CardResponse
+from app.schemes.card_schema import CardResponse
 from typing import Optional
 
 class ColumnBase(BaseModel):

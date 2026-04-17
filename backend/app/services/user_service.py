@@ -12,16 +12,10 @@ class UserService:
     def login(self, user_data: UserLogin) -> UserResponse:
         user = self.repository.get_user_by_email(user_data.email)
         
-        if not user:
+        if not user or not verify_password(user_data.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User with email not found"
-            )
-        
-        if not verify_password(user_data.password, user.hashed_password):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid password"
+                detail="Invalid email or password"
             )
         
         return UserResponse.model_validate(user)

@@ -11,9 +11,23 @@ export default function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    const getErrorMessage = (error, defaultMsg) => {
+        const responseData = error?.response?.data;
+
+        if (responseData?.details && responseData.details.length > 0) {
+            let msg = responseData.details[0].message;
+            return msg;
+        }
+
+        if (responseData?.detail) return responseData.detail;
+        return defaultMsg;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMsg('');
 
         try {
             const response = await api.post('/users/create', {
@@ -26,8 +40,9 @@ export default function Register() {
             navigate('/');
 
         } catch (error) {
-            console.error('Ошибка сервера:', error);
-            alert('Не удалось зарегистрироваться. Возможно, такой Email уже есть.');
+            console.error('Error during registration:', error);
+            const errorMsg = getErrorMessage(error, 'Failed to register.');
+            setErrorMsg(errorMsg);
         }
     };
 
@@ -61,6 +76,13 @@ export default function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 />
+
+                {errorMsg && (
+                    <p className="text-red-500 text-sm text-center font-medium">
+                        {errorMsg}
+                    </p>
+                )}
+
                 <button
                     type="submit"
                     className="self-center px-12 bg-[#6564AF] hover:bg-[#4745B3] text-white font-semibold py-2 rounded-md transition-colors mt-2"

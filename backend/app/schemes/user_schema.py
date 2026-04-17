@@ -14,8 +14,8 @@ class UserLogin(BaseModel):
     password: str = Field(..., description="User password")
 
 class UserPasswordUpdate(BaseModel):
-    old_password: str = Field(..., description="Текущий пароль")
-    new_password: str = Field(..., min_length=8, max_length=72, description="Новый пароль")
+    old_password: str = Field(..., min_length=8, max_length=72, description="Current password")
+    new_password: str = Field(..., min_length=8, max_length=72, description="New password")
 
 # Схема для ответа (GET запрос или ответ после создания)
 class UserResponse(UserBase):

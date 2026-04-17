@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 export const useBoards = () => {
     const navigate = useNavigate();
@@ -12,15 +13,28 @@ export const useBoards = () => {
     const [boards, setBoards] = useState([]);
     const [editingBoardId, setEditingBoardId] = useState(null);
     const [editingTitle, setEditingTitle] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    const getErrorMessage = (error, defaultMsg) => {
+        const responseData = error?.response?.data;
+
+        if (responseData?.details && responseData.details.length > 0) {
+            let msg = responseData.details[0].message;
+            return msg;
+        }
+
+        if (responseData?.detail) return responseData.detail;
+        return defaultMsg;
+    };
 
     const fetchBoards = async (userId) => {
         try {
             const response = await api.get(`/boards/all/${userId}`);
 
-            console.log("Пришли доски с бэкенда:", response.data.boards);
+            console.log("The boards came from the backend:", response.data.boards);
             setBoards(response.data.boards);
         } catch (error) {
-            console.error("Ошибка загрузки досок:", error);
+            console.error("Error loading boards:", error);
         }
     };
 
@@ -39,18 +53,14 @@ export const useBoards = () => {
 
     const handleCreateBoard = async (e) => {
         if (e) e.preventDefault();
-
-        if (newBoardTitle.trim().length < 5) {
-            alert("Название доски должно состоять минимум из 5 символов!");
-            return;
-        }
+        setErrorMsg('');
 
         try {
             const response = await api.post(`/boards/create/${userId}`, {
                 title: newBoardTitle
             });
 
-            console.log("Доска успешно создана:", response.data);
+            console.log("The board was created successfully:", response.data);
 
             // Закрываем окно и очищаем инпут
             setIsModalOpen(false);
@@ -59,23 +69,24 @@ export const useBoards = () => {
             setBoards(prevBoards => [...prevBoards, response.data]);
 
         } catch (error) {
-            console.error('Ошибка при создании доски:', error);
-            const errorMsg = error.response?.data?.detail || 'Не удалось создать доску.';
-            alert(`Ошибка: ${JSON.stringify(errorMsg)}`);
+            console.error('Error when creating the board:', error);
+            const errorMsg = getErrorMessage(error, 'Could not create a board.');
+            setErrorMsg(errorMsg);
         }
     };
 
     const handleDeleteBoard = async (e, boardId) => {
         e.stopPropagation();
 
-        if (!window.confirm('Вы точно хотите удалить эту доску?')) return;
+        if (!window.confirm('Are you sure you want to delete this board?')) return;
 
         try {
             await api.delete(`/boards/${userId}/${boardId}`);
             setBoards(prevBoards => prevBoards.filter(board => board.id !== boardId));
         } catch (error) {
-            console.error('Ошибка при удалении:', error);
-            alert('Не удалось удалить доску');
+            console.error('Error when deleting:', error);
+            const errorMsg = getErrorMessage(error, 'Could not delete the board.');
+            toast.error(errorMsg);
         }
     };
 
@@ -105,9 +116,9 @@ export const useBoards = () => {
             // Выходим из режима редактирования
             setEditingBoardId(null);
         } catch (error) {
-            console.error('Ошибка при обновлении:', error);
-            alert('Не удалось обновить название');
-            setEditingBoardId(null);
+            console.error('Error during the update:', error);
+            const errorMsg = getErrorMessage(error, 'Could not update the name.');
+            toast.error(errorMsg);
         }
     };
 
@@ -133,6 +144,7 @@ export const useBoards = () => {
         handleDeleteBoard,
         startEditing,
         saveBoardTitle,
-        handleKeyDown
+        handleKeyDown,
+        errorMsg
     };
 };

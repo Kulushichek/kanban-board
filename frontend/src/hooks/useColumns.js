@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 export const useColumns = (boardId) => {
 
@@ -12,13 +13,28 @@ export const useColumns = (boardId) => {
     const [editingColumnId, setEditingColumnId] = useState(null);
     const [editingColumnTitle, setEditingColumnTitle] = useState('');
 
+    const getErrorMessage = (error, defaultMsg) => {
+        const responseData = error?.response?.data;
+
+        if (responseData?.details && responseData.details.length > 0) {
+            let msg = responseData.details[0].message;
+            return msg;
+        }
+
+        if (responseData?.detail) {
+            return responseData.detail;
+        }
+
+        return defaultMsg;
+    };
+
     const fetchBoardInfo = async () => {
         try {
             const response = await api.get(`/boards/${userId}/${boardId}`);
             setBoardTitle(response.data.title);
         } catch (error) {
-            console.error("Ошибка загрузки информации о доске:", error);
-            setBoardTitle(`Доска #${boardId}`);
+            console.error("Error loading information about the board:", error);
+            setBoardTitle(`Board #${boardId}`);
         }
     };
 
@@ -29,7 +45,7 @@ export const useColumns = (boardId) => {
             const response = await api.get(`/columns/all/${userId}/${boardId}`);
             setColumns(response.data.columns);
         } catch (error) {
-            console.error("Ошибка загрузки колонок:", error);
+            console.error("Error loading columns:", error);
         }
     };
 
@@ -42,11 +58,6 @@ export const useColumns = (boardId) => {
     const handleCreateColumn = async (e) => {
         if (e) e.preventDefault();
 
-        if (newColumnTitle.trim().length < 3) {
-            alert("Название колонки не должно быть короче 3 символов!");
-            return;
-        }
-
         try {
             const response = await api.post(`/columns/create/${userId}/${boardId}`, {
                 title: newColumnTitle
@@ -55,21 +66,22 @@ export const useColumns = (boardId) => {
             setColumns(prev => [...prev, response.data]);
             setNewColumnTitle('');
         } catch (error) {
-            console.error('Ошибка при создании колонки:', error);
-            alert('Не удалось создать колонку');
+            console.error('Error when creating a column:', error);
+            const errorMsg = getErrorMessage(error, 'Failed to create a column.');
+            toast.error(errorMsg);
         }
     };
 
     const handleDeleteColumn = async (columnId) => {
-        const isConfirmed = window.confirm("Точно удалить эту колонку?");
+        const isConfirmed = window.confirm("Are you sure you want to delete this column?");
         if (!isConfirmed) return;
 
         try {
             await api.delete(`/columns/${userId}/${columnId}`);
             setColumns(prev => prev.filter(col => col.id !== columnId));
         } catch (error) {
-            console.error('Ошибка при удалении колонки:', error);
-            alert('Не удалось удалить колонку');
+            console.error('Error deleting a column:', error);
+            toast.error('Could not delete column');
         }
     };
 
@@ -94,12 +106,6 @@ export const useColumns = (boardId) => {
             setEditingColumnId(null);
             return;
         }
-        if (trimmedTitle.length < 3) {
-            alert("Название колонки должно быть не короче 3 символов!");
-            const oldTitle = columns.find(c => c.id === columnId)?.title || '';
-            setEditingColumnTitle(oldTitle);
-            return;
-        }
 
         try {
             const response = await api.put(`/columns/${userId}/${columnId}`, {
@@ -111,18 +117,13 @@ export const useColumns = (boardId) => {
             ));
             setEditingColumnId(null);
         } catch (error) {
-            console.error('Ошибка при обновлении:', error);
-            alert('Не удалось обновить название');
-            setEditingColumnId(null);
+            console.error('Error updating the name:', error);
+            const errorMsg = getErrorMessage(error, 'Could not update the name.');
+            toast.error(errorMsg);
         }
     };
 
     const handleCreateCard = async (columnId, title) => {
-        if (title.trim().length < 3) {
-            alert("Название карточки должно быть не короче 3 символов!");
-            return;
-        }
-
         try {
             const response = await api.post(`/cards/create/${userId}/${columnId}`, {
                 title: title
@@ -136,8 +137,9 @@ export const useColumns = (boardId) => {
             ));
             return true;
         } catch (error) {
-            console.error('Ошибка при создании карточки:', error);
-            alert('Не удалось создать карточку');
+            console.error('Error when creating the card:', error);
+            const errorMsg = getErrorMessage(error, 'Failed to create the card.');
+            toast.error(errorMsg);
             return false;
         }
     };
@@ -157,8 +159,9 @@ export const useColumns = (boardId) => {
             }));
             return true;
         } catch (error) {
-            console.error('Ошибка при обновлении карточки:', error);
-            alert('Не удалось сохранить изменения карточки');
+            console.error('Error when updating the card:', error);
+            const errorMsg = getErrorMessage(error, 'Failed to update the card.');
+            toast.error(errorMsg);
             return false;
         }
     };
@@ -181,13 +184,13 @@ export const useColumns = (boardId) => {
                 position: destination.index
             });
         } catch (error) {
-            console.error("Ошибка при сохранении позиции", error);
+            console.error("Error when saving the position", error);
         }
     };
 
 
     const handleDeleteCard = async (columnId, cardId) => {
-        const isConfirmed = window.confirm("Точно удалить эту карточку?");
+        const isConfirmed = window.confirm("Are you sure you want to delete this card?");
         if (!isConfirmed) return false;
 
         try {
@@ -201,8 +204,8 @@ export const useColumns = (boardId) => {
             }));
             return true;
         } catch (error) {
-            console.error('Ошибка при удалении карточки:', error);
-            alert('Не удалось удалить карточку');
+            console.error('Error when deleting the card:', error);
+            toast.error('Failed to delete the card');
             return false;
         }
     };
@@ -219,8 +222,8 @@ export const useColumns = (boardId) => {
             });
             return response.data;
         } catch (error) {
-            console.error('Ошибка при загрузке картинки:', error);
-            alert('Не удалось загрузить картинку');
+            console.error('Error when uploading the image:', error);
+            toast.error('Failed to upload the image');
             return null;
         }
     };
@@ -230,7 +233,7 @@ export const useColumns = (boardId) => {
             const response = await api.get(`/cards/${userId}/${cardId}/images`);
             return response.data;
         } catch (error) {
-            console.error('Ошибка при загрузке списка картинок:', error);
+            console.error('Error when loading the list of images:', error);
             return [];
         }
     };
@@ -240,8 +243,8 @@ export const useColumns = (boardId) => {
             await api.delete(`/cards/${userId}/${cardId}/images/${imageId}`);
             return true;
         } catch (error) {
-            console.error('Ошибка при удалении картинки:', error);
-            alert('Не удалось удалить картинку');
+            console.error('Error when deleting the image:', error);
+            toast.error('Failed to delete the image');
             return false;
         }
     };

@@ -57,10 +57,6 @@ export default function BoardPage() {
     };
 
     const saveCardModal = async () => {
-        if (editCardData.title.trim().length < 3) {
-            alert("Название должно быть не короче 3 символов!");
-            return;
-        }
         const dataToSend = {
             ...editCardData,
             deadline: editCardData.deadline === "" ? null : editCardData.deadline
@@ -81,7 +77,7 @@ export default function BoardPage() {
     };
 
     const onRemoveImage = async (imageId) => {
-        const isConfirmed = window.confirm("Точно удалить эту картинку?");
+        const isConfirmed = window.confirm("Are you sure you want to delete this picture?");
         if (!isConfirmed) return;
 
         const success = await handleDeleteImage(activeCard.cardId, imageId);
@@ -99,7 +95,7 @@ export default function BoardPage() {
     };
 
     const onDragEnd = (result) => {
-        console.log("Результат перетаскивания:", result);
+        console.log("The result of the drag and drop:", result);
 
         const { destination, source } = result;
 
@@ -119,7 +115,7 @@ export default function BoardPage() {
             <Header />
 
             <div className="w-full bg-white/90 shadow-[0_4px_4px_0_rgba(255,255,255,0.40)] py-3 mb-8 flex justify-center">
-                <h2 className="text-[#5B4A82] text-xl font-bold">{boardTitle || "Загрузка..."}</h2>
+                <h2 className="text-[#5B4A82] text-xl font-bold">{boardTitle || "Loading..."}</h2>
             </div>
 
             <main className="flex-1 overflow-x-auto pb-6 max-w-[95%] w-full mx-auto px-4 lg:px-0 scrollbar-custom">
@@ -142,7 +138,7 @@ export default function BoardPage() {
                                         <h3
                                             onClick={(e) => startEditingColumn(e, column)}
                                             className="max-w-[180px] w-full text-white text-[18px] font-medium cursor-pointer hover:opacity-80 transition-opacity flex-1 break-words"
-                                            title="Нажмите, чтобы изменить"
+                                            title="Click to change"
                                         >
                                             {column.title}
                                         </h3>
@@ -155,7 +151,7 @@ export default function BoardPage() {
                                             handleDeleteColumn(column.id);
                                         }}
                                         className="text-white/40 hover:text-[#E61383] transition-colors ml-2 mt-1 opacity-0 group-hover:opacity-100"
-                                        title="Удалить колонку"
+                                        title="Delete column"
                                     >
                                         <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                             <title>Trash</title>

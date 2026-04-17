@@ -18,7 +18,8 @@ export default function Boards() {
         handleDeleteBoard,
         startEditing,
         saveBoardTitle,
-        handleKeyDown
+        handleKeyDown,
+        errorMsg
     } = useBoards();
 
     return (
@@ -34,7 +35,7 @@ export default function Boards() {
                         <button
                             onClick={(e) => handleDeleteBoard(e, board.id)}
                             className="absolute top-2 right-2 p-1.5 bg-white/20 hover:bg-white/50 rounded-full opacity-0 group-hover:opacity-100 transition-all z-10"
-                            title="Удалить доску"
+                            title="Delete board"
                         >
                             <svg className="w-4 h-4 text-white hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -51,6 +52,7 @@ export default function Boards() {
                                     onBlur={() => saveBoardTitle(board.id)} // Сохраняем, если кликнули мимо
                                     onKeyDown={(e) => handleKeyDown(e, board.id)} // Сохраняем по Enter
                                     autoFocus
+                                    maxLength={50}
                                     onClick={(e) => e.stopPropagation()}
                                     className="w-full px-2 py-1 text-center text-[#5B4A82] font-bold text-lg rounded-md focus:outline-none shadow-inner"
                                 />
@@ -58,7 +60,7 @@ export default function Boards() {
                                 <h3
                                     onClick={(e) => startEditing(e, board)}
                                     className="text-white font-bold text-lg cursor-pointer hover:underline decoration-white/50 underline-offset-4 text-center w-full truncate"
-                                    title="Нажми, чтобы изменить"
+                                    title="Click to edit"
                                 >
                                     {board.title}
                                 </h3>
@@ -112,11 +114,18 @@ export default function Boards() {
                                 type="text"
                                 value={newBoardTitle}
                                 onChange={(e) => setNewBoardTitle(e.target.value)}
-                                placeholder="e.g. Project Alpha"
+                                placeholder="Enter board title"
+                                maxLength={50}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#E767C7] focus:border-transparent transition-all"
                                 autoFocus
                             />
                         </div>
+
+                        {errorMsg && (
+                            <div className="text-red-500 text-sm mb-4 text-center">
+                                {errorMsg}
+                            </div>
+                        )}
 
                         {/* Кнопки действий */}
                         <div className="flex justify-end gap-3">

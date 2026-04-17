@@ -16,26 +16,32 @@ export default function ProfileModal({ isOpen, onClose }) {
         setErrorMsg('');
         setSuccessMsg('');
 
-        if (newPassword.trim().length < 8) {
-            setErrorMsg('Новый пароль должен быть не короче 8 символов!');
-            return;
-        }
-
         try {
             await api.put(`/users/${userId}/change-password`, {
                 old_password: oldPassword,
                 new_password: newPassword
             });
 
-            setSuccessMsg('Пароль успешно изменен!');
+            setSuccessMsg('The password has been successfully changed!');
 
             setTimeout(() => {
                 handleClose();
             }, 2000);
 
         } catch (error) {
-            console.error('Ошибка смены пароля:', error);
-            setErrorMsg(error.response?.data?.detail || 'Неверный старый пароль или ошибка сервера.');
+            console.error('Password change error:', error);
+
+            const responseData = error.response?.data;
+            let errorMessage = 'Incorrect old password or server error.';
+
+            if (responseData?.details && responseData.details.length > 0) {
+                errorMessage = responseData.details[0].message;
+            }
+            else if (responseData?.detail) {
+                errorMessage = responseData.detail;
+            }
+
+            setErrorMsg(errorMessage);
         }
     };
 
@@ -86,8 +92,16 @@ export default function ProfileModal({ isOpen, onClose }) {
                         />
                     </div>
 
-                    {errorMsg && <p className="text-red-500 text-sm text-center font-medium">{errorMsg}</p>}
-                    {successMsg && <p className="text-green-500 text-sm text-center font-medium">{successMsg}</p>}
+                    {errorMsg && (
+                        <p className="text-red-500 text-sm text-center font-medium">
+                            {errorMsg}
+                        </p>
+                    )}
+                    {successMsg && (
+                        <p className="text-green-500 text-sm text-center font-medium">
+                            {successMsg}
+                        </p>
+                    )}
 
                     <div className="flex justify-end gap-3 mt-4">
                         <button

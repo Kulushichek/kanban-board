@@ -9,9 +9,24 @@ export default function Login() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    const getErrorMessage = (error, defaultMsg) => {
+        const responseData = error?.response?.data;
+
+        if (responseData?.details && responseData.details.length > 0) {
+            let msg = responseData.details[0].message;
+            return msg;
+        }
+
+        if (responseData?.detail) return responseData.detail;
+        return defaultMsg;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Запрещаем страничке перезагружаться
+        setErrorMsg('');
+
         try {
             const response = await api.post('/users/login', {
                 email: email,
@@ -27,8 +42,9 @@ export default function Login() {
             navigate('/');
         }
         catch (error) {
-            console.error('Ошибка входа:', error);
-            alert('Неверная почта или пароль!');
+            console.error('Login error:', error);
+            const errorMsg = getErrorMessage(error, "Invalid email or password!");
+            setErrorMsg(errorMsg);
         }
     };
 
@@ -55,6 +71,13 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 />
+
+                {errorMsg && (
+                    <p className="text-red-500 text-sm text-center font-medium">
+                        {errorMsg}
+                    </p>
+                )}
+
                 <button
                     type="submit"
                     className="self-center px-12 bg-[#6564AF] hover:bg-[#4745B3] text-white font-semibold py-2 rounded-md transition-colors mt-2"

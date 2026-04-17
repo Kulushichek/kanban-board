@@ -2,12 +2,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useColumns } from '../hooks/useColumns';
 import { useState } from 'react';
 import Header from '../components/Header';
-
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useBoards } from '../hooks/useBoards';
 
 export default function BoardPage() {
     const { id: boardId } = useParams();
     const navigate = useNavigate();
+
+    const { boards, editingBoardId, editingTitle, setEditingTitle, startEditing, saveBoardTitle, handleKeyDown } = useBoards();
+    const numericBoardId = Number(boardId);
+    const currentBoard = boards.find(b => b.id === numericBoardId);
 
     const {
         columns,
@@ -113,9 +117,30 @@ export default function BoardPage() {
         <div className="min-h-screen bg-workspace-gradient pt-8 pb-6 font-sans flex flex-col">
 
             <Header />
-
-            <div className="w-full bg-white/90 shadow-[0_4px_4px_0_rgba(255,255,255,0.40)] py-3 mb-8 flex justify-center">
-                <h2 className="text-[#5B4A82] text-xl font-bold">{boardTitle || "Loading..."}</h2>
+            <div className="w-full bg-white/90 shadow-[0_4px_4px_0_rgba(255,255,255,0.40)] py-3 mb-8 flex justify-center items-center min-h-[56px]">
+                {editingBoardId === numericBoardId ? (
+                    <input
+                        type="text"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onBlur={() => saveBoardTitle(numericBoardId)}
+                        onKeyDown={(e) => handleKeyDown(e, numericBoardId)}
+                        autoFocus
+                        maxLength={50}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-[300px] px-3 py-1 text-center text-[#5B4A82] font-bold text-xl rounded-md focus:outline-none shadow-inner bg-[#9DB2F5]/10 border border-[#9DB2F5] transition-colors"
+                    />
+                ) : (
+                    <h2
+                        onClick={(e) => {
+                            if (currentBoard) startEditing(e, currentBoard);
+                        }}
+                        className="text-[#5B4A82] text-xl font-bold cursor-pointer hover:opacity-70 transition-opacity"
+                        title="Click to edit"
+                    >
+                        {currentBoard ? currentBoard.title : (boardTitle || "Loading...")}
+                    </h2>
+                )}
             </div>
 
             <main className="flex-1 overflow-x-auto pb-6 max-w-[95%] w-full mx-auto px-4 lg:px-0 scrollbar-custom">

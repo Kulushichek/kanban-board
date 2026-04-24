@@ -211,7 +211,7 @@ export default function BoardPage() {
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
-                                            className="flex-1 overflow-y-auto scrollbar-custom mb-4 pr-1"
+                                            className="flex-1 overflow-y-auto space-y-3 scrollbar-custom mb-4 pr-1"
                                         >
                                             {column.cards && column.cards.map((card, index) => (
                                                 <Draggable key={card.id} draggableId={String(card.id)} index={index}>

@@ -74,6 +74,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                             type="password"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
+                            maxLength={72}
                             placeholder="Enter current password"
                             required
                             className="w-full bg-[#9DB2F5]/10 rounded-[12px] px-4 py-3 text-[#632289] text-sm outline-none border border-transparent focus:border-[#9DB2F5] transition-colors"
@@ -86,6 +87,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                             type="password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
+                            maxLength={72}
                             placeholder="Enter new password"
                             required
                             className="w-full bg-[#9DB2F5]/10 rounded-[12px] px-4 py-3 text-[#632289] text-sm outline-none border border-transparent focus:border-[#9DB2F5] transition-colors"

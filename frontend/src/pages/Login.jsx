@@ -73,6 +73,7 @@ export default function Login() {
                     type="password"
                     placeholder="Password"
                     value={password}
+                    maxLength={72}
                     onChange={(e) => setPassword(e.target.value)}
                     className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 />

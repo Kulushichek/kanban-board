@@ -35,7 +35,7 @@ export default function Register() {
             const response = await api.post('/users/create', {
                 email: email,
                 password: password,
-                userName: userName
+                username: userName
             });
             dispatch(setUser({
                 userId: response.data.id,
@@ -63,6 +63,7 @@ export default function Register() {
                     type="text"
                     placeholder="Username"
                     value={userName}
+                    maxLength={20}
                     onChange={(e) => setUserName(e.target.value)}
                     className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 />
@@ -77,6 +78,7 @@ export default function Register() {
                     type="password"
                     placeholder="Password"
                     value={password}
+                    maxLength={72}
                     onChange={(e) => setPassword(e.target.value)}
                     className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 />

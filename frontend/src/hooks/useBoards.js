@@ -3,14 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { setBoards, addBoard, deleteBoard, updateBoard } from '../store/boardsSlice';
+import { setUser } from '../store/userSlice';
+
 export const useBoards = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const [username, setUsername] = useState('');
-    const [userId, setUserId] = useState(null);
+    const boards = useSelector((state) => state.boards.boards)
+    const { userId, userName } = useSelector((state) => state.user)
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newBoardTitle, setNewBoardTitle] = useState('');
-    const [boards, setBoards] = useState([]);
     const [editingBoardId, setEditingBoardId] = useState(null);
     const [editingTitle, setEditingTitle] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -32,7 +37,7 @@ export const useBoards = () => {
             const response = await api.get(`/boards/all/${userId}`);
 
             console.log("The boards came from the backend:", response.data.boards);
-            setBoards(response.data.boards);
+            dispatch(setBoards(response.data.boards));
         } catch (error) {
             console.error("Error loading boards:", error);
         }
@@ -40,16 +45,15 @@ export const useBoards = () => {
 
     useEffect(() => {
         const storedUserId = localStorage.getItem('userId');
-        const storedName = localStorage.getItem('username');
+        const storedName = localStorage.getItem('userName');
 
         if (storedUserId) {
-            setUserId(storedUserId);
-            setUsername(storedName || 'User');
+            dispatch(setUser({ userId: storedUserId, userName: storedName || 'User' }))
             fetchBoards(storedUserId);
         } else {
             navigate('/login');
         }
-    }, [navigate]);
+    }, [navigate, dispatch]);
 
     const handleCreateBoard = async (e) => {
         if (e) e.preventDefault();
@@ -61,12 +65,11 @@ export const useBoards = () => {
             });
 
             console.log("The board was created successfully:", response.data);
-
             // Закрываем окно и очищаем инпут
             setIsModalOpen(false);
             setNewBoardTitle('');
 
-            setBoards(prevBoards => [...prevBoards, response.data]);
+            dispatch(addBoard(response.data));
 
         } catch (error) {
             console.error('Error when creating the board:', error);
@@ -82,7 +85,7 @@ export const useBoards = () => {
 
         try {
             await api.delete(`/boards/${userId}/${boardId}`);
-            setBoards(prevBoards => prevBoards.filter(board => board.id !== boardId));
+            dispatch(deleteBoard(boardId));
         } catch (error) {
             console.error('Error when deleting:', error);
             const errorMsg = getErrorMessage(error, 'Could not delete the board.');
@@ -109,9 +112,7 @@ export const useBoards = () => {
             });
 
             // Обновляем название доски в нашем массиве
-            setBoards(prevBoards => prevBoards.map(board =>
-                board.id === boardId ? { ...board, title: response.data.title } : board
-            ));
+            dispatch(updateBoard({ id: boardId, title: response.data.title }))
 
             // Выходим из режима редактирования
             setEditingBoardId(null);
@@ -131,7 +132,7 @@ export const useBoards = () => {
     };
 
     return {
-        username,
+        userName,
         boards,
         isModalOpen,
         setIsModalOpen,

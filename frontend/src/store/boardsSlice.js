@@ -16,7 +16,7 @@ const boardsSlice = createSlice({
             state.boards = state.boards.filter(board => board.id !== action.payload);
         },
         updateBoard: (state, action) => {
-            const board = state.boards = state.boards.find(board => board.id === action.payload.id)
+            const board = state.boards.find(board => board.id === action.payload.id)
             if (board) {
                 board.title = action.payload.title;
             }

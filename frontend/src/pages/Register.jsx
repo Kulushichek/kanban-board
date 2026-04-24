@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import userRegIcon from '../assets/userRegisterIcon.png';
 import api from '../api/axios';
 import AuthLayout from '../components/AuthLayout';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../store/userSlice';
 
 export default function Register() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    // Три ячейки памяти
-    const [username, setUsername] = useState('');
+    const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -33,10 +35,12 @@ export default function Register() {
             const response = await api.post('/users/create', {
                 email: email,
                 password: password,
-                username: username
+                userName: userName
             });
-            localStorage.setItem('userId', response.data.id);
-            localStorage.setItem('username', username);
+            dispatch(setUser({
+                userId: response.data.id,
+                userName: userName
+            }));
             navigate('/');
 
         } catch (error) {
@@ -58,8 +62,8 @@ export default function Register() {
                 <input
                     type="text"
                     placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                     className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                 />
                 <input

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 export const useColumns = (boardId) => {
 
     const [columns, setColumns] = useState([]);
     const [boardTitle, setBoardTitle] = useState('');
     const [newColumnTitle, setNewColumnTitle] = useState('');
-    const userId = localStorage.getItem('userId');
-    const username = localStorage.getItem('username') || 'User';
+    const { userId, userName } = useSelector((state) => state.user)
 
     const [editingColumnId, setEditingColumnId] = useState(null);
     const [editingColumnTitle, setEditingColumnTitle] = useState('');
@@ -253,7 +253,7 @@ export const useColumns = (boardId) => {
         columns,
         boardTitle,
         newColumnTitle,
-        username,
+        userName,
         setNewColumnTitle,
         handleCreateColumn,
         handleDeleteColumn,

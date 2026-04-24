@@ -4,25 +4,25 @@ const userSlice = createSlice({
     name: "user",
     initialState: {
         userId: localStorage.getItem('userId') || null,
-        username: localStorage.getItem('username') || '',
+        userName: localStorage.getItem('userName') || '',
     },
     reducers: {
         setUser: (state, action) => {
             state.userId = action.payload.userId;
-            state.username = action.payload.username;
+            state.userName = action.payload.userName;
 
             localStorage.setItem('userId', action.payload.userId);
-            localStorage.setItem('username', action.payload.username);
+            localStorage.setItem('userName', action.payload.userName);
         },
         logout: (state) => {
             state.userId = null;
-            state.username = '';
+            state.userName = '';
 
             localStorage.removeItem('userId');
-            localStorage.removeItem('username');
+            localStorage.removeItem('userName');
         }
     },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, logout } = userSlice.actions;
 export default userSlice.reducer;

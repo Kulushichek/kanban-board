@@ -4,8 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import AuthLayout from '../components/AuthLayout';
 
+import { useDispatch } from 'react-redux';
+import { setUser } from '../store/userSlice';
+
 export default function Login() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -34,9 +38,10 @@ export default function Login() {
             });
             const userData = response.data;
 
-            // Сохраняем идентификатор пользователя
-            localStorage.setItem('userId', userData.id);
-            localStorage.setItem('username', userData.username);
+            dispatch(setUser({
+                userId: userData.id,
+                userName: userData.username
+            }));
 
             // Перекидываем на главную страницу
             navigate('/');

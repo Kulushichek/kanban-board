@@ -2,14 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import ProfileModal from './ProfileModal';
 import { useState } from 'react';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../store/userSlice';
+
 export default function Header() {
     const navigate = useNavigate();
-    const username = localStorage.getItem('username') || 'User';
+    const dispatch = useDispatch();
+
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const userName = useSelector((state) => state.user.userName) || 'User';
 
     const handleLogout = () => {
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username');
+        dispatch(logout());
         navigate('/login');
     };
 
@@ -30,9 +34,9 @@ export default function Header() {
                         className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 cursor-pointer hover:bg-blue-200 transition-colors shadow-sm"
                         title="Profile settings"
                     >
-                        {username.charAt(0).toUpperCase()}
+                        {userName.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-gray-600 font-medium hidden sm:block">{username}</span>
+                    <span className="text-gray-600 font-medium hidden sm:block">{userName}</span>
                 </div>
 
                 <button

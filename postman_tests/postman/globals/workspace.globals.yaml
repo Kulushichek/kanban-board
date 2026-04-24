@@ -1,0 +1,5 @@
+name: Globals
+values:
+  - key: currentUserId
+    value: ''
+    enabled: true

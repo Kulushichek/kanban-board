@@ -1,0 +1,50 @@
+$kind: http-request
+name: LoginUser
+url: http://0.0.0.0:8000/api/users/login
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\": \"mishgsn@gmail.com\",\r
+
+    \    \"password\": \"12345678\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200 OK\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response contains user data\", function () {\r
+
+      \    var jsonData = pm.response.json();\r
+
+      \    pm.expect(jsonData).to.have.property('id');\r
+
+      \    pm.expect(jsonData).to.have.property('username');\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Save user ID to environment\", function () {\r
+
+      \    var jsonData = pm.response.json();\r
+
+      \    if(jsonData.id) {\r
+
+      \        pm.globals.set(\"currentUserId\", jsonData.id);\r
+
+      \        console.log(\"Успешно сохранен ID: \" + jsonData.id);\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+order: 1777015373818

@@ -1,0 +1,24 @@
+$kind: http-request
+name: RegisterUser
+url: http://localhost:8000/api/users/create
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"username\": \"alesya\",\r
+
+    \    \"email\": \"user@gmail.com\",\r
+
+    \    \"password\": \"12345678\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 201 Created\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });"
+    language: text/javascript
+order: 2743478213653224

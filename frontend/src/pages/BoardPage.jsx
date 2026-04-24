@@ -114,7 +114,7 @@ export default function BoardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-workspace-gradient pt-8 pb-6 font-sans flex flex-col">
+        <div className="h-screen bg-workspace-gradient pt-8 pb-6 font-sans flex flex-col overflow-hidden">
 
             <Header />
             <div className="w-full bg-white/90 shadow-[0_4px_4px_0_rgba(255,255,255,0.40)] py-3 mb-8 flex justify-center items-center min-h-[56px]">
@@ -143,7 +143,7 @@ export default function BoardPage() {
                 )}
             </div>
 
-            <main className="flex-1 overflow-x-auto pb-6 max-w-[95%] w-full mx-auto px-4 lg:px-0 scrollbar-custom">
+            <main className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-6 max-w-[95%] w-full mx-auto px-4 lg:px-0 scrollbar-custom">
                 <DragDropContext onDragEnd={onDragEnd}>
                     <div className="flex gap-6 items-start h-full">
                         {columns.map(column => (
@@ -211,7 +211,7 @@ export default function BoardPage() {
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
-                                            className="flex-1 overflow-y-auto mb-4 space-y-3 pr-1"
+                                            className="flex-1 overflow-y-auto scrollbar-custom mb-4 pr-1"
                                         >
                                             {column.cards && column.cards.map((card, index) => (
                                                 <Draggable key={card.id} draggableId={String(card.id)} index={index}>

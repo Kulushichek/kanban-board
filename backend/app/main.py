@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
-from app.database import init_db
+# from app.database import init_db
 from app.routes import user_route, board_route, column_route, card_route
 import os
 from fastapi.exceptions import RequestValidationError
@@ -58,6 +58,6 @@ app.include_router(board_route.router)
 app.include_router(column_route.router)
 app.include_router(card_route.router)
 
-@app.on_event("startup")
-def startup_event():
-    init_db()
+# @app.on_event("startup")
+# def startup_event():
+#     init_db()
